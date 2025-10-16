@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pílula Romântica</title>
+<style>
+  body {
+    background: radial-gradient(circle at top left, #ff99cc, #cc66ff, #ff66aa);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    transition: background 1s ease;
+    animation: gradientShift 10s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background: radial-gradient(circle at top left, #ff99cc, #cc66ff, #ff66aa); }
+    50% { background: radial-gradient(circle at bottom right, #ff66aa, #ff99cc, #cc66ff); }
+    100% { background: radial-gradient(circle at top left, #ff99cc, #cc66ff, #ff66aa); }
+  }
+
+  button {
+    background: linear-gradient(90deg, #ff0055, #ff66cc);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
+    transition: all 0.3s ease;
+  }
+  button:hover { transform: scale(1.1); box-shadow: 0 0 35px rgba(255,0,150,0.8); }
+
+  .hidden { display: none; }
+
+  .pills { display: flex; gap: 50px; animation: fadeIn 1s ease forwards; }
+  .pill { width: 120px; height: 50px; border-radius: 30px; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .pill:hover { transform: scale(1.2); }
+  .blue { background: linear-gradient(90deg, #009dff, #00ffff); box-shadow:0 0 30px rgba(0,157,255,0.6); }
+  .red { background: linear-gradient(90deg, #ff0000, #ff5e5e); box-shadow:0 0 30px rgba(255,0,0,0.6); }
+
+  /* Imagens responsivas */
+  img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 20px;
+    box-shadow:0 0 30px rgba(255,255,255,0.3);
+    animation: fadeIn 1s ease forwards;
+  }
+
+  #photoSection img {
+    max-width: 150px;
+    width: 30vw;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    animation: fadeIn 1s ease forwards;
+  }
+
+  @media (max-width: 600px){
+    #photoSection img { width: 40vw; max-width: 120px; }
+  }
+
+  #romanticText, #sigiloText, #sigiloMsg { font-size: 1.4rem; margin-top: 20px; }
+
+  #sigiloBtn, #sigiloOptions { margin-top: 20px; }
+
+  .sigilo-option { background: transparent; border: 2px solid white; color: white; font-size: 1.1rem; padding: 10px 25px; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; }
+  .sigilo-option:hover { background:white; color:black; transform: scale(1.1); }
+
+  #compliment { font-size:1.6rem; margin-top:30px; animation: fadeIn 1s ease forwards; }
+
+  .heart {
+    position: absolute;
+    width: 10px; height:10px;
+    background:red;
+    clip-path: polygon(50% 0%,61% 15%,75% 15%,80% 25%,80% 40%,70% 60%,50% 80%,30% 60%,20% 40%,20% 25%,25% 15%,39% 15%);
+    opacity:0.7;
+    animation: floatHeart 5s linear infinite;
+  }
+
+  @keyframes floatHeart { 0% {transform:translateY(0) scale(0.5); opacity:0.5;} 50% {opacity:1;} 100% {transform:translateY(-600px) scale(1); opacity:0;} }
+  @keyframes fadeIn { from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);} }
+</style>
+</head>
+<body>
+<button id="startBtn">Você está preparada?</button>
+
+<div id="pillSection" class="hidden">
+  <div class="pills">
+    <div class="pill blue" onclick="choosePill('azul')"></div>
+    <div class="pill red" onclick="choosePill('vermelha')"></div>
+  </div>
+</div>
+
+<div id="result" class="hidden"></div>
+<div id="photoSection" class="hidden"></div>
+<div id="sigiloText" class="hidden"></div>
+<div id="sigiloBtn" class="hidden"></div>
+<div id="sigiloOptions" class="hidden"></div>
+<div id="sigiloMsg" class="hidden"></div>
+<div id="compliment" class="hidden"></div>
+
+<script>
+const startBtn = document.getElementById('startBtn');
+const pillSection = document.getElementById('pillSection');
+const result = document.getElementById('result');
+const photoSection = document.getElementById('photoSection');
+const sigiloText = document.getElementById('sigiloText');
+const sigiloBtn = document.getElementById('sigiloBtn');
+const sigiloOptions = document.getElementById('sigiloOptions');
+const sigiloMsg = document.getElementById('sigiloMsg');
+const compliment = document.getElementById('compliment');
+
+// Coloque seu número
+const phoneNumber = "55XXXXXXXXXXX"; 
+const whatsappMsg = encodeURIComponent("Eu topo somente se for no sigilo total, que horas tenho que tá pronta?");
+const whatsappLink = `https://wa.me/${phoneNumber}?text=${whatsappMsg}`;
+
+// Corações flutuantes
+for(let i=0;i<30;i++){
+  const heart=document.createElement('div');
+  heart.className='heart';
+  heart.style.left=Math.random()*100+'vw';
+  heart.style.animationDuration=(5+Math.random()*5)+'s';
+  heart.style.width=heart.style.height=(5+Math.random()*15)+'px';
+  document.body.appendChild(heart);
+}
+
+startBtn.addEventListener('click', ()=>{
+  startBtn.classList.add('hidden');
+  pillSection.classList.remove('hidden');
+});
+
+function choosePill(color){
+  pillSection.classList.add('hidden');
+  result.classList.remove('hidden');
+
+  let image = "";
+  let romanticText = "";
+  if(color==='azul'){
+    image="https://i.postimg.cc/tJRJwTRf/Whats-App-Image-2025-10-16-at-11-23-36.jpg";
+    romanticText="Essa Foto me faz recordar como eu te admiro toda vez que te vejo, tanto você quanto sua beleza de tão linda que tu és que nem mesmo idiomas, linguás, nem mesmo palavras são suficiente para descrever o quanto você é linda e perfeita";
+  } else {
+    image="https://i.postimg.cc/LXJvFHCd/image.png";
+    romanticText="Essa foto me faz lembrar o quanto você me deixa confortavel perto de você, pra ser o (Vitorio de verdade) que ninguem conhece, que é carinhoso, cuidadoso, amigavel, você me faz se sentir bem comigo mesmo como faz 10 meses que não me sinto mais, espero que você se sinta bem comigo também, que se sinta bem quando está perto de mim pra ser você mesma.";
+  }
+
+  result.innerHTML=`
+    <img src="${image}" alt="Pílula ${color}">
+    <div id="romanticText">${romanticText}</div>
+    <button id="continueBtn" onclick="showPhotos()">Continuar →</button>
+  `;
+}
+
+function showPhotos(){
+  result.classList.add('hidden');
+  photoSection.classList.remove('hidden');
+  photoSection.innerHTML=`
+    <img src="https://i.postimg.cc/q7Syn2Ln/image.png">
+    <img src="https://i.postimg.cc/W3ctT88x/image.png">
+    <img src="https://i.postimg.cc/pd4cTh51/image.png]">
+  `;
+
+  sigiloText.classList.remove('hidden');
+  sigiloText.innerText = "🌹 Cada foto lembra cada momento especial que ambos tiveram juntos, que nós dois sabemos que e muito dificil de termos, mas espero que mesmo escondido a gente consiga se ver fora das paredes do iacas kkk amantes, bem escondidinhos kkk, enfim não to fazendo isso por que estou apegado ou qualquer coisa, esse só sou eu, vitorio que ninguem conhece que poucas pessoas tiveram essa versão e você está tendo agora... so quero que saiba que você é incrivel, espero que possamos alguma hora nos ver a escondida sem se preocupar com o tempo";
+
+  setTimeout(()=>{
+    sigiloBtn.classList.remove('hidden');
+    sigiloBtn.innerHTML=`<button onclick="showSigiloOptions()">Vamos nos ver? No sigilo?</button>`;
+  },5000);
+}
+
+function showSigiloOptions(){
+  sigiloBtn.classList.add('hidden');
+  sigiloOptions.classList.remove('hidden');
+  sigiloOptions.innerHTML=`
+    <button class="sigilo-option" onclick="goWhatsApp()">Sim</button>
+    <button class="sigilo-option" onclick="showNaoMsg()">Não</button>
+  `;
+}
+
+function goWhatsApp(){
+  window.open(whatsappLink,"_blank");
+}
+
+function showNaoMsg(){
+  sigiloOptions.classList.add('hidden');
+  sigiloMsg.classList.remove('hidden');
+  sigiloMsg.innerText = "❌ Não podemos nós ver, pois eu tenho medo";
+}
+</script>
+</body>
+</html>
